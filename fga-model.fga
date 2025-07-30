@@ -19,4 +19,4 @@ type document
     define editor: [user, team#member] or editor from parent_project or admin
     define parent_project: [project]
     define public: [user:*]
-    define viewer: [user, team#member] or viewer from parent_project or editor or public 
+    define viewer: [user, team#member] or viewer from parent_project or editor or public

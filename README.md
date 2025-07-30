@@ -1,76 +1,43 @@
-# FGA Docs Visualizer - Project Odyssey Demo
+# FGA Docs Visualizer
 
-A demonstration of OpenFGA (Fine-Grained Authorization) securing a RAG (Retrieval-Augmented Generation) pipeline in a realistic enterprise environment. This demo showcases how the same question produces different responses based on user authorization levels.
+A demonstration of OpenFGA-secured RAG (Retrieval-Augmented Generation) chatbot that shows how to implement document-level authorization with vector search.
 
-## 🎯 Demo Overview
+## 🎯 Overview
 
-**Innovate Inc.** has built a single RAG agent to answer questions for all employees, but the data it draws from has complex, overlapping permissions. This demo shows how OpenFGA enforces access control at the document level, ensuring users only see information they're authorized to access.
-
-### Demo Personas
-
-- **Sandra (CEO)**: Access to everything including top-secret architecture and financial documents
-- **Raj (Lead Developer)**: Engineering access to technical documents, but no financial data
-- **Chloe (Junior Developer)**: Limited access to basic engineering documents
-- **Bob (Sales)**: Public access only to API documentation
-
-### Demo Question
-
-Try asking: *"Give me a full summary of Project Odyssey's status, technology, and performance."*
-
-Each persona will receive a different response based on their access level, demonstrating real-time permission enforcement.
+This project demonstrates how to build a secure RAG chatbot that respects document-level permissions using OpenFGA (Open Fine-Grained Authorization). Users get different responses based on their authorization level, ensuring sensitive information is properly protected.
 
 ## 🚀 Quick Start
 
+For detailed setup instructions, see **[SETUP.md](./SETUP.md)**.
+
 ### Prerequisites
 
-1. **Node.js** (v16 or higher)
-2. **Ollama** with Mistral model installed
-3. **OpenFGA Playground** account (free at [play.fga.dev](https://play.fga.dev))
+- Node.js (v16+)
+- Python (v3.8+)
+- Git
 
 ### Installation
 
-1. **Clone and install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/TheDreamSaver/fga-docs-visualizer.git
+cd fga-docs-visualizer
 
-2. **Set up OpenFGA:**
-   - Go to [play.fga.dev](https://play.fga.dev)
-   - Create a new store
-   - Note your Store ID, Client ID, and Client Secret
+# Install dependencies
+npm install
 
-3. **Configure environment:**
-   ```bash
-   cp env.example .env
-   ```
-   
-   Edit `.env` with your OpenFGA credentials:
-   ```env
-   OPENFGA_API_URL=https://play.fga.dev
-   OPENFGA_STORE_ID=your_store_id_here
-   OPENFGA_CLIENT_ID=your_client_id_here
-   OPENFGA_CLIENT_SECRET=your_client_secret_here
-   ```
+# Set up environment
+cp env.example .env
+# Edit .env with your configuration
 
-4. **Start Ollama (if not running):**
-   ```bash
-   ollama serve
-   ```
+# Initialize the project
+npm run setup
 
-5. **Run the setup script:**
-   ```bash
-   npm run setup
-   ```
+# Start the application
+npm start
+```
 
-6. **Start the server:**
-   ```bash
-   npm start
-   ```
-
-7. **Open the demo:**
-   - Navigate to `http://localhost:3000`
-   - Select a user persona
-   - Ask questions and see how responses vary by access level
+Visit http://localhost:3000 to access the demo.
 
 ## 🏗️ Architecture
 
@@ -78,7 +45,6 @@ Each persona will receive a different response based on their access level, demo
 
 - **OpenFGA**: Authorization engine enforcing document-level permissions
 - **ChromaDB**: Vector store for document similarity search
-- **Ollama**: Local LLM for generating responses
 - **Express.js**: Web server and API endpoints
 - **Custom FGA Retriever**: Integrates authorization with document retrieval
 
@@ -91,21 +57,6 @@ Each persona will receive a different response based on their access level, demo
 5. LLM generates response using only authorized documents
 6. Response reflects user's access level
 
-## 📁 Project Structure
-
-```
-fga-docs-visualizer/
-├── data/documents/          # Sample documents with different sensitivity levels
-├── lib/
-│   └── FgaRetriever.js     # Custom retriever integrating FGA with vector search
-├── public/
-│   └── index.html          # Beautiful web interface
-├── fga-model.fga           # OpenFGA authorization model
-├── setup.js                # Initialization script
-├── server.js               # Express server with chat API
-└── package.json            # Dependencies and scripts
-```
-
 ## 🔐 Authorization Model
 
 The OpenFGA model defines a hierarchical permission structure:
@@ -116,130 +67,90 @@ The OpenFGA model defines a hierarchical permission structure:
 - **Teams** have different access levels
 - **Users** inherit permissions through team membership
 
-### Key Features
+### User Roles
 
-- **Hierarchical permissions**: Access flows from parent to child objects
-- **Team-based access**: Users inherit permissions through team membership
-- **Document-level control**: Each document has its own permission rules
-- **Real-time enforcement**: Permissions checked on every request
+1. **Sandra (CEO)** - Full access to all documents
+2. **Raj (Lead Developer)** - Access to engineering documents
+3. **Chloe (Junior Developer)** - Limited access to core engine only
+4. **Bob (Sales)** - Public documents only
 
-## 🎨 Demo Features
+## 📚 Available Documents
 
-### Web Interface
+- `architecture_v3.txt` - TOP SECRET (Executive access only)
+- `finance_performance.txt` - CONFIDENTIAL (Executive access only)
+- `internal_sdk.txt` - Internal (Engineering team access)
+- `design_mockups.txt` - Internal (Engineering team access)
+- `core_engine.txt` - Internal (All engineering access)
+- `public_api_docs.txt` - Public (Everyone can access)
 
-- **Modern UI**: Beautiful, responsive design with gradient backgrounds
-- **User Selection**: Easy switching between different personas
-- **Real-time Chat**: Interactive chat interface with loading states
-- **Suggested Questions**: Pre-built questions to test different scenarios
-- **Access Indicators**: Shows how many documents each user can access
+## 🧪 Testing
 
-### Technical Features
+1. Start the server: `npm start`
+2. Open http://localhost:3000
+3. Select a user persona from the sidebar
+4. Ask questions about Project Odyssey
+5. Observe different responses based on user permissions
 
-- **Vector Similarity Search**: Finds relevant documents using semantic search
-- **Permission Filtering**: Only returns documents user can access
-- **Context-Aware Responses**: LLM responses based on authorized content only
-- **Real-time Authorization**: OpenFGA checks on every request
+### Example Questions
 
-## 🧪 Testing the Demo
+- "What is Project Odyssey?"
+- "Tell me about the architecture"
+- "What are the financial projections?"
+- "How does the core engine work?"
 
-### Expected Behaviors
+## 📁 Project Structure
 
-1. **Sandra (CEO)**:
-   - Can access all documents including top-secret architecture and financial data
-   - Gets comprehensive responses with full project details
-
-2. **Raj (Lead Developer)**:
-   - Can access engineering documents and core engine specs
-   - No access to financial or top-secret architecture documents
-   - Gets technical responses without sensitive business data
-
-3. **Chloe (Junior Developer)**:
-   - Limited access to basic engineering documents
-   - No access to internal SDK or advanced technical specs
-   - Gets simplified technical responses
-
-4. **Bob (Sales)**:
-   - Only access to public API documentation
-   - Gets basic project overview without technical details
-   - No access to internal or confidential information
-
-### Sample Questions to Try
-
-- "Give me a full summary of Project Odyssey's status, technology, and performance."
-- "What are the technical specifications of the core engine?"
-- "Tell me about the API documentation."
-- "What are the financial projections for the project?"
-- "What's the current architecture of the system?"
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENFGA_API_URL` | OpenFGA server URL | `https://play.fga.dev` |
-| `OPENFGA_STORE_ID` | Your OpenFGA store ID | Required |
-| `OPENFGA_CLIENT_ID` | Your OpenFGA client ID | Required |
-| `OPENFGA_CLIENT_SECRET` | Your OpenFGA client secret | Required |
-| `OLLAMA_BASE_URL` | Ollama server URL | `http://localhost:11434` |
-| `OLLAMA_MODEL` | Ollama model name | `mistral` |
-| `CHROMA_PERSIST_DIRECTORY` | Vector store directory | `./chroma_db` |
-| `PORT` | Server port | `3000` |
-
-### Customization
-
-- **Add Documents**: Place new `.txt` files in `data/documents/`
-- **Modify Permissions**: Edit tuples in `setup.js`
-- **Change Model**: Update `fga-model.fga` for different authorization rules
-- **Custom Users**: Add new personas in `server.js`
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-1. **OpenFGA Connection Error**:
-   - Verify your credentials in `.env`
-   - Check that your store exists at play.fga.dev
-
-2. **Ollama Not Responding**:
-   - Ensure Ollama is running: `ollama serve`
-   - Check if Mistral model is installed: `ollama list`
-
-3. **Vector Store Errors**:
-   - Run `npm run setup` to initialize the vector store
-   - Check that documents exist in `data/documents/`
-
-4. **Permission Denied**:
-   - Verify the OpenFGA model was created successfully
-   - Check that tuples were written in setup
-
-### Debug Mode
-
-Enable detailed logging by setting:
-```bash
-DEBUG=* npm start
+```
+fga-docs-visualizer/
+├── data/documents/          # Sample documents with different sensitivity levels
+├── lib/
+│   └── FgaRetriever.js     # Custom retriever integrating FGA with vector search
+├── public/
+│   ├── index.html          # Main demo interface
+│   └── chunks.html         # Chunks visualizer
+├── fga-model.fga           # OpenFGA authorization model
+├── create-tuples-fixed.js  # Script to create authorization tuples
+├── setup.js                # Main initialization script
+├── test.js                 # Testing utilities
+├── server.js               # Express server with chat API
+├── SETUP.md                # Comprehensive setup guide
+└── package.json            # Dependencies and scripts
 ```
 
-## 📚 Learning Resources
+## 🔧 Scripts
 
-- [OpenFGA Documentation](https://openfga.dev/)
-- [OpenFGA Playground](https://play.fga.dev)
-- [LangChain Documentation](https://python.langchain.com/)
-- [ChromaDB Documentation](https://docs.trychroma.com/)
+- `npm start` - Start the application
+- `npm run setup` - Initialize OpenFGA and vector store
+- `npm test` - Run tests
+- `npm run dev` - Start in development mode
+
+## 📖 API Endpoints
+
+- `GET /` - Main demo interface
+- `GET /chunks` - Chunks visualizer
+- `POST /api/chat` - Chat endpoint
+- `GET /api/users` - Available users
+- `GET /api/chunks` - Vector store chunks
+- `GET /api/health` - Health check
 
 ## 🤝 Contributing
 
-This demo is designed to showcase OpenFGA's capabilities in a realistic enterprise scenario. Feel free to:
-
-- Add more document types and permission scenarios
-- Enhance the UI with additional features
-- Extend the authorization model for more complex use cases
-- Add more sophisticated RAG features
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+This project is licensed under the MIT License.
 
----
+## 🆘 Support
 
-**Built with ❤️ to demonstrate the power of Fine-Grained Authorization in modern AI applications.** 
+For detailed setup instructions and troubleshooting, see **[SETUP.md](./SETUP.md)**.
+
+If you encounter issues:
+1. Check the troubleshooting section in SETUP.md
+2. Review console logs for error messages
+3. Ensure all prerequisites are installed
+4. Open an issue on GitHub 

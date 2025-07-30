@@ -132,17 +132,63 @@ app.post('/api/chat', async (req, res) => {
     // Get relevant documents
     const relevantDocs = await retriever.getRelevantDocuments(message);
     
+    // Check if user has access to any relevant documents
+    if (relevantDocs.length === 0) {
+      const noAccessResponse = `I don't have access to the information you're asking about. Based on your current permissions, this information is not available to you. Please contact your administrator if you believe you should have access to this information.`;
+      
+      return res.json({
+        response: noAccessResponse,
+        user: user,
+        documentsAccessed: 0,
+        accessDenied: true,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // Count unique documents accessed (not chunks)
+    const uniqueDocuments = new Set();
+    const documentNames = [];
+    relevantDocs.forEach(doc => {
+      if (doc.metadata && doc.metadata.doc_id) {
+        uniqueDocuments.add(doc.metadata.doc_id);
+        // Extract document name from doc_id (e.g., "document:core_engine" -> "core_engine")
+        const docName = doc.metadata.doc_id.replace('document:', '');
+        if (!documentNames.includes(docName)) {
+          documentNames.push(docName);
+        }
+      }
+    });
+    const documentsAccessed = uniqueDocuments.size;
+    
     // Create context from documents
     const context = relevantDocs.map(doc => doc.pageContent).join('\n\n');
     
-    // Create prompt with context
+    // Create improved prompt for role-specific responses
+    const userRole = user.name.toLowerCase();
+    let roleInstructions = '';
+    
+    if (userRole.includes('ceo') || userRole.includes('sandra')) {
+      roleInstructions = 'Provide a BRIEF executive summary (1-2 sentences) focusing on business impact, key decisions, and strategic implications. Use business terminology.';
+    } else if (userRole.includes('developer') || userRole.includes('engineer') || userRole.includes('raj') || userRole.includes('chloe')) {
+      roleInstructions = 'Provide TECHNICAL DETAILS and implementation specifics. Include technical architecture, code considerations, and engineering challenges. Be thorough but concise (3-4 sentences).';
+    } else if (userRole.includes('sales') || userRole.includes('bob')) {
+      roleInstructions = 'EXPLAIN IN SIMPLE TERMS that a non-technical person can understand. Avoid technical jargon. If you must use technical terms, explain them briefly. Focus on benefits and value proposition (2-3 sentences).';
+    } else {
+      roleInstructions = 'Provide a balanced response that is informative but accessible (2-3 sentences).';
+    }
+    
     const prompt = `You are an AI assistant for Project Odyssey at Innovate Inc. You have access to the following information based on the user's permissions:
 
 ${context}
 
 User Question: ${message}
 
-Please provide a comprehensive answer based on the information you have access to. If you don't have access to certain information, simply state that it's not available to you. Be helpful and professional in your response.`;
+Instructions:
+1. ${roleInstructions}
+2. Only use information from the provided context
+3. If the context doesn't contain enough information to answer the question, say "I don't have enough information to answer that question completely."
+4. Be professional but conversational
+5. Don't mention that you're an AI assistant or reference the context directly`;
 
     // Generate response using OpenAI
     const response = await llm.invoke(prompt);
@@ -152,7 +198,9 @@ Please provide a comprehensive answer based on the information you have access t
     res.json({
       response: response.content,
       user: user,
-      documentsAccessed: relevantDocs.length,
+      documentsAccessed: documentsAccessed,
+      documentNames: documentNames,
+      accessDenied: false,
       timestamp: new Date().toISOString()
     });
 

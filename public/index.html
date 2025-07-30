@@ -116,7 +116,7 @@
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: 600px;
+            height: 760px;
         }
 
         .chat-header {
@@ -170,6 +170,31 @@
             background: white;
             border: 1px solid #e2e8f0;
             border-bottom-left-radius: 5px;
+        }
+
+        .message.access-denied .message-content {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            border-bottom-left-radius: 5px;
+        }
+
+        .doc-count {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #3b82f6;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #eff6ff;
+            border: 1px solid #dbeafe;
+            transition: all 0.2s ease;
+        }
+
+        .doc-count:hover {
+            color: #2563eb;
+            background-color: #dbeafe;
+            border-color: #3b82f6;
         }
 
         .message-meta {
@@ -326,6 +351,92 @@
             color: #1e293b;
         }
 
+        .access-denied {
+            background: #fef3f2; /* Light red background */
+            border: 1px solid #fca5a5; /* Red border */
+            color: #991b1b; /* Darker red text */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 10px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .document-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .document-list li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .document-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+        }
+
         @media (max-width: 768px) {
             .demo-container {
                 grid-template-columns: 1fr;
@@ -382,6 +493,9 @@
                     <h4><i class="fas fa-lightbulb"></i> Try This Question:</h4>
                     <button class="question-btn" onclick="askQuestion('Give me a full summary of Project Odyssey\'s status, technology, and performance.')">
                         "Give me a full summary of Project Odyssey's status, technology, and performance."
+                    </button>
+                    <button class="question-btn" onclick="askQuestion('What is the system architecture?')">
+                        "What is the system architecture?"
                     </button>
                     <button class="question-btn" onclick="askQuestion('What are the technical specifications of the core engine?')">
                         "What are the technical specifications of the core engine?"
@@ -534,14 +648,27 @@
         function addMessage(content, sender, metadata = null) {
             const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
+            
+            // Add special class for access denied messages
+            if (metadata && metadata.accessDenied) {
+                messageDiv.className = `message ${sender} access-denied`;
+            } else {
+                messageDiv.className = `message ${sender}`;
+            }
             
             const timestamp = new Date().toLocaleTimeString();
             const user = users[selectedUser];
             
             let metaText = '';
             if (metadata && metadata.documentsAccessed !== undefined) {
-                metaText = `${user ? user.name : 'User'} • ${timestamp} • ${metadata.documentsAccessed} documents accessed`;
+                if (metadata.accessDenied) {
+                    metaText = `${user ? user.name : 'User'} • ${timestamp} • Access Denied`;
+                } else {
+                    const docCount = metadata.documentsAccessed;
+                    const docNames = metadata.documentNames || [];
+                    
+                    metaText = `${user ? user.name : 'User'} • ${timestamp} • <span class="doc-count" onclick="showDocumentModal('${docNames.join(', ')}', ${docCount})">${docCount} documents accessed</span>`;
+                }
             } else {
                 metaText = sender === 'user' ? (user ? user.name : 'User') : 'Assistant';
                 metaText += ` • ${timestamp}`;
@@ -556,6 +683,49 @@
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show document modal
+        function showDocumentModal(docNames, docCount) {
+            // Create modal HTML
+            const modalHTML = `
+                <div id="documentModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>📄 Documents Accessed (${docCount})</h3>
+                            <span class="close" onclick="closeDocumentModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Documents used to answer this question:</strong></p>
+                            <ul class="document-list">
+                                ${docNames.split(', ').map(doc => `<li>📋 ${doc}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            document.getElementById('documentModal').style.display = 'block';
+        }
+
+        // Close document modal
+        function closeDocumentModal() {
+            const modal = document.getElementById('documentModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('documentModal');
+            if (event.target === modal) {
+                closeDocumentModal();
+            }
         }
 
         // Ask suggested question
