@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromaDB Chunks Visualizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .chunks-container {
+            padding: 20px;
+        }
+        .chunk-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chunk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .chunk-id {
+            font-weight: bold;
+            color: #667eea;
+            font-family: monospace;
+        }
+        .chunk-doc {
+            background: #e3f2fd;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+        .chunk-content {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .chunk-metadata {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .embedding-preview {
+            font-family: monospace;
+            font-size: 0.8em;
+            color: #888;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Chunks Visualizer</h1>
+            <p>Explore the document chunks stored in your vector database</p>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalChunks">-</div>
+                <div>Total Chunks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uniqueDocs">-</div>
+                <div>Unique Documents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgChunkSize">-</div>
+                <div>Avg Chunk Size</div>
+            </div>
+        </div>
+
+        <div class="chunks-container" id="chunksContainer">
+            <div class="loading">Loading chunks...</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadChunks() {
+            try {
+                const timestamp = Date.now();
+                const response = await fetch(`/api/chunks?t=${timestamp}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                displayStats(data);
+                displayChunks(data.chunks);
+                
+            } catch (error) {
+                document.getElementById('chunksContainer').innerHTML = 
+                    `<div class="error">Error loading chunks: ${error.message}</div>`;
+            }
+        }
+
+        function displayStats(data) {
+            const uniqueDocs = new Set(data.chunks.map(chunk => chunk.metadata?.doc_id)).size;
+            const avgChunkSize = Math.round(
+                data.chunks.reduce((sum, chunk) => sum + chunk.content.length, 0) / data.chunks.length
+            );
+
+            document.getElementById('totalChunks').textContent = data.totalChunks;
+            document.getElementById('uniqueDocs').textContent = uniqueDocs;
+            document.getElementById('avgChunkSize').textContent = avgChunkSize + ' chars';
+        }
+
+        function displayChunks(chunks) {
+            const container = document.getElementById('chunksContainer');
+            
+            if (chunks.length === 0) {
+                container.innerHTML = '<div class="loading">No chunks found</div>';
+                return;
+            }
+
+            // Debug: Log the first chunk's metadata
+            if (chunks.length > 0) {
+                console.log('First chunk metadata:', chunks[0].metadata);
+            }
+
+            const chunksHtml = chunks.map(chunk => `
+                <div class="chunk-card">
+                    <div class="chunk-header">
+                        <span class="chunk-id">${chunk.id}</span>
+                        <span class="chunk-doc">${chunk.metadata?.doc_id || 'Unknown'}</span>
+                    </div>
+                    <div class="chunk-content">${escapeHtml(chunk.content)}</div>
+                    <div class="chunk-metadata">
+                        <strong>Source:</strong> ${chunk.metadata?.source || 'Unknown'} | 
+                        <strong>Chunk Index:</strong> ${chunk.metadata?.chunk_index !== undefined ? chunk.metadata.chunk_index : 'Unknown'}
+                    </div>
+                    ${chunk.embedding ? `
+                        <div class="embedding-preview">
+                            Embedding (first 10 dims): [${chunk.embedding.map(d => d.toFixed(3)).join(', ')}]
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            container.innerHTML = chunksHtml;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load chunks when page loads
+        loadChunks();
+    </script>
+</body>
+</html> 

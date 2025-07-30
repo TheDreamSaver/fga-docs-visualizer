@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FGA Docs Visualizer - Project Odyssey</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: #f8fafc;
+            padding: 30px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .user-selector {
+            margin-bottom: 30px;
+        }
+
+        .user-selector h3 {
+            margin-bottom: 15px;
+            color: #1e293b;
+            font-size: 1.2rem;
+        }
+
+        .user-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .user-option:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .user-option.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6366f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-info h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 20px 30px;
+            background: #1e293b;
+            color: white;
+            border-bottom: 1px solid #334155;
+        }
+
+        .chat-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: #3b82f6;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: #3b82f6;
+        }
+
+        .send-btn {
+            padding: 15px 25px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .send-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .demo-info {
+            margin-top: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .demo-info h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .demo-info p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .feature h4 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feature p {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .suggested-questions {
+            margin-top: 20px;
+        }
+
+        .suggested-questions h4 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .question-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #475569;
+            transition: all 0.3s ease;
+        }
+
+        .question-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        @media (max-width: 768px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> FGA Docs Visualizer</h1>
+            <p>Project Odyssey - OpenFGA Secured RAG Chatbot Demo</p>
+        </div>
+
+        <div class="demo-container">
+            <div class="sidebar">
+                <div class="user-selector">
+                    <h3><i class="fas fa-users"></i> Select User Persona</h3>
+                    <div class="user-option" data-user="ceo_sandra">
+                        <div class="user-avatar">S</div>
+                        <div class="user-info">
+                            <h4>Sandra (CEO)</h4>
+                            <p>Access to everything</p>
+                        </div>
+                    </div>
+                    <div class="user-option" data-user="lead_dev_raj">
+                        <div class="user-avatar">R</div>
+                        <div class="user-info">
+                            <h4>Raj (Lead Developer)</h4>
+                            <p>Engineering access</p>
+                        </div>
+                    </div>
+                    <div class="user-option" data-user="junior_dev_chloe">
+                        <div class="user-avatar">C</div>
+                        <div class="user-info">
+                            <h4>Chloe (Junior Developer)</h4>
+                            <p>Limited access</p>
+                        </div>
+                    </div>
+                    <div class="user-option" data-user="sales_bob">
+                        <div class="user-avatar">B</div>
+                        <div class="user-info">
+                            <h4>Bob (Sales)</h4>
+                            <p>Public access only</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="suggested-questions">
+                    <h4><i class="fas fa-lightbulb"></i> Try This Question:</h4>
+                    <button class="question-btn" onclick="askQuestion('Give me a full summary of Project Odyssey\'s status, technology, and performance.')">
+                        "Give me a full summary of Project Odyssey's status, technology, and performance."
+                    </button>
+                    <button class="question-btn" onclick="askQuestion('What are the technical specifications of the core engine?')">
+                        "What are the technical specifications of the core engine?"
+                    </button>
+                    <button class="question-btn" onclick="askQuestion('Tell me about the API documentation.')">
+                        "Tell me about the API documentation."
+                    </button>
+                    <button class="question-btn" onclick="askQuestion('What are the financial projections for the project?')">
+                        "What are the financial projections for the project?"
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3><i class="fas fa-robot"></i> Project Odyssey Assistant</h3>
+                    <p>Ask questions about Project Odyssey. Your access level determines what information you can see.</p>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>Hello! I'm your Project Odyssey assistant. Please select a user persona from the sidebar and ask me anything about the project. I'll provide answers based on your access level.</p>
+                            <div class="message-meta">System • Just now</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processing your request...</p>
+                </div>
+
+                <div class="chat-input">
+                    <div class="input-group">
+                        <input type="text" id="messageInput" placeholder="Ask about Project Odyssey..." />
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-info">
+            <h3><i class="fas fa-info-circle"></i> About This Demo</h3>
+            <p>This demonstration showcases how OpenFGA (Fine-Grained Authorization) secures a RAG (Retrieval-Augmented Generation) pipeline in a realistic enterprise environment. The same question produces different responses based on the user's authorization level.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <h4><i class="fas fa-shield-alt"></i> Fine-Grained Authorization</h4>
+                    <p>OpenFGA enforces access control at the document level, ensuring users only see information they're authorized to access.</p>
+                </div>
+                <div class="feature">
+                    <h4><i class="fas fa-search"></i> Intelligent Retrieval</h4>
+                    <p>The system uses vector similarity search to find relevant documents, then filters results based on user permissions.</p>
+                </div>
+                <div class="feature">
+                    <h4><i class="fas fa-robot"></i> Context-Aware Responses</h4>
+                    <p>LLM responses are generated based only on the authorized documents, demonstrating real-time permission enforcement.</p>
+                </div>
+                <div class="feature">
+                    <h4><i class="fas fa-users"></i> Multi-Persona Testing</h4>
+                    <p>Test the same question with different user personas to see how authorization affects the response scope and content.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedUser = null;
+        let users = {};
+
+        // Load users on page load
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                users = await response.json();
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // User selection
+        document.querySelectorAll('.user-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.user-option').forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selection to clicked option
+                this.classList.add('selected');
+                selectedUser = this.dataset.user;
+                
+                // Update chat header
+                const user = users[selectedUser];
+                if (user) {
+                    document.querySelector('.chat-header h3').innerHTML = `<i class="fas fa-robot"></i> ${user.name} - Project Odyssey Assistant`;
+                    document.querySelector('.chat-header p').textContent = `Ask questions as ${user.name}. Access level: ${user.description}`;
+                }
+            });
+        });
+
+        // Send message
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            if (!selectedUser) {
+                alert('Please select a user persona first!');
+                return;
+            }
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        userId: selectedUser
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    addMessage(`Error: ${data.error}`, 'assistant');
+                } else {
+                    addMessage(data.response, 'assistant', data);
+                }
+            } catch (error) {
+                addMessage('Sorry, there was an error processing your request.', 'assistant');
+                console.error('Error:', error);
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+            }
+        }
+
+        // Add message to chat
+        function addMessage(content, sender, metadata = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const user = users[selectedUser];
+            
+            let metaText = '';
+            if (metadata && metadata.documentsAccessed !== undefined) {
+                metaText = `${user ? user.name : 'User'} • ${timestamp} • ${metadata.documentsAccessed} documents accessed`;
+            } else {
+                metaText = sender === 'user' ? (user ? user.name : 'User') : 'Assistant';
+                metaText += ` • ${timestamp}`;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <p>${content}</p>
+                    <div class="message-meta">${metaText}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Ask suggested question
+        function askQuestion(question) {
+            if (!selectedUser) {
+                alert('Please select a user persona first!');
+                return;
+            }
+            
+            document.getElementById('messageInput').value = question;
+            sendMessage();
+        }
+
+        // Enter key to send
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Load users on page load
+        loadUsers();
+    </script>
+</body>
+</html> 

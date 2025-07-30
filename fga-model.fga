@@ -1,0 +1,22 @@
+model
+  schema 1.1
+
+type user
+
+type team
+  relations
+    define member: [user]
+
+type project
+  relations
+    define admin: [user, team#member]
+    define editor: [user, team#member] or admin
+    define viewer: [user, team#member] or editor
+
+type document
+  relations
+    define admin: [user, team#member] or admin from parent_project
+    define editor: [user, team#member] or editor from parent_project or admin
+    define parent_project: [project]
+    define public: [user:*]
+    define viewer: [user, team#member] or viewer from parent_project or editor or public 

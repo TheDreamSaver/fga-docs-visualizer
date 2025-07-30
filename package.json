@@ -1,0 +1,38 @@
+{
+  "name": "fga-docs-visualizer",
+  "version": "1.0.0",
+  "description": "OpenFGA-secured RAG chatbot demo for Innovate Inc.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "setup": "node setup.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.0.20",
+    "@langchain/openai": "^0.0.14",
+    "@openfga/sdk": "^0.4.0",
+    "@xenova/transformers": "^2.17.2",
+    "chromadb": "^1.7.3",
+    "chromadb-default-embed": "^2.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "langchain": "^0.0.200",
+    "multer": "^1.4.5-lts.1",
+    "node-html-parser": "^6.1.12",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "openfga",
+    "rag",
+    "authorization",
+    "chatbot"
+  ],
+  "author": "Innovate Inc.",
+  "license": "MIT"
+}
