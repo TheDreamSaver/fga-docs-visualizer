@@ -67,4 +67,24 @@ Integration Examples:
 - Webhook support for real-time updates
 - Database connectors for popular systems
 
+API Endpoints:
+Internal API Endpoints:
+
+Data Processing: POST /api/internal/v1/streams/process, POST /api/internal/v1/batch/jobs, GET /api/internal/v1/streams/{streamId}/status, DELETE /api/internal/v1/streams/{streamId}
+
+Machine Learning: POST /api/internal/v1/models/train, GET /api/internal/v1/models/{modelId}/status, PUT /api/internal/v1/models/{modelId}/deploy, DELETE /api/internal/v1/models/{modelId}
+
+Analytics: POST /api/internal/v1/analytics/metrics, GET /api/internal/v1/analytics/dashboards, PUT /api/internal/v1/analytics/reports/schedule, DELETE /api/internal/v1/analytics/reports/{reportId}
+
+System Management: GET /api/internal/v1/system/health, POST /api/internal/v1/system/config, GET /api/internal/v1/system/logs, PUT /api/internal/v1/system/maintenance
+
+Security: POST /api/internal/v1/auth/keys/rotate, GET /api/internal/v1/auth/audit/logs, PUT /api/internal/v1/auth/permissions, DELETE /api/internal/v1/auth/sessions/{sessionId}
+
+Authentication:
+All internal API endpoints require:
+- Valid API key with internal access
+- Request signing for sensitive operations
+- Rate limiting: 1000 requests/minute per key
+- Audit logging for all operations
+
 This SDK is actively maintained and updated monthly with new features and performance improvements. 

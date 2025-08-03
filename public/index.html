@@ -71,6 +71,7 @@
         .user-option {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 12px;
@@ -103,6 +104,11 @@
             color: white;
         }
 
+        .user-info {
+            flex: 1;
+            margin-right: 15px;
+        }
+
         .user-info h4 {
             font-size: 1rem;
             margin-bottom: 5px;
@@ -113,10 +119,35 @@
             opacity: 0.8;
         }
 
+        .user-docs-dropdown {
+            flex-shrink: 0;
+        }
+
+        .docs-select {
+            width: 60px;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .docs-select:hover {
+            border-color: #3b82f6;
+        }
+
+        .docs-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: 760px;
+            height: 840px;
         }
 
         .chat-header {
@@ -416,6 +447,49 @@
             padding: 10px 0;
             color: #555;
             font-size: 0.95rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-body h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .modal-body h4 {
+            color: #374151;
+            margin: 20px 0 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .modal-body p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-body ul {
+            margin: 10px 0 15px 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .modal-body pre {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .modal-body code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            color: #1e293b;
         }
 
         .document-list {
@@ -455,6 +529,18 @@
             <p>Project Odyssey - OpenFGA Secured RAG Chatbot Demo</p>
         </div>
 
+        <div class="nav-links" style="text-align: center; margin: 30px 0 40px 0;">
+            <a href="/" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
+                <i class="fas fa-home"></i> Main Demo
+            </a>
+            <a href="/chunks" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); transition: all 0.3s ease;">
+                <i class="fas fa-cubes"></i> Chunks View
+            </a>
+            <a href="/compare" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); transition: all 0.3s ease;">
+                <i class="fas fa-users"></i> Compare Responses
+            </a>
+        </div>
+
         <div class="demo-container">
             <div class="sidebar">
                 <div class="user-selector">
@@ -465,12 +551,22 @@
                             <h4>Sandra (CEO)</h4>
                             <p>Access to everything</p>
                         </div>
+                        <div class="user-docs-dropdown">
+                            <select class="docs-select" data-user="ceo_sandra">
+                                <option value="">📄</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="user-option" data-user="lead_dev_raj">
                         <div class="user-avatar">R</div>
                         <div class="user-info">
                             <h4>Raj (Lead Developer)</h4>
                             <p>Engineering access</p>
+                        </div>
+                        <div class="user-docs-dropdown">
+                            <select class="docs-select" data-user="lead_dev_raj">
+                                <option value="">📄</option>
+                            </select>
                         </div>
                     </div>
                     <div class="user-option" data-user="junior_dev_chloe">
@@ -479,12 +575,22 @@
                             <h4>Chloe (Junior Developer)</h4>
                             <p>Limited access</p>
                         </div>
+                        <div class="user-docs-dropdown">
+                            <select class="docs-select" data-user="junior_dev_chloe">
+                                <option value="">📄</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="user-option" data-user="sales_bob">
                         <div class="user-avatar">B</div>
                         <div class="user-info">
                             <h4>Bob (Sales)</h4>
                             <p>Public access only</p>
+                        </div>
+                        <div class="user-docs-dropdown">
+                            <select class="docs-select" data-user="sales_bob">
+                                <option value="">📄</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -494,11 +600,14 @@
                     <button class="question-btn" onclick="askQuestion('Give me a full summary of Project Odyssey\'s status, technology, and performance.')">
                         "Give me a full summary of Project Odyssey's status, technology, and performance."
                     </button>
-                    <button class="question-btn" onclick="askQuestion('What is the system architecture?')">
-                        "What is the system architecture?"
+                    <button class="question-btn" onclick="askQuestion('Tell me about the UI/UX guidelines for Project Odyssey?')">
+                        "Tell me about the UI/UX guidelines for Project Odyssey?"
                     </button>
-                    <button class="question-btn" onclick="askQuestion('What are the technical specifications of the core engine?')">
-                        "What are the technical specifications of the core engine?"
+                    <button class="question-btn" onclick="askQuestion('What is the color palette for the project?')">
+                        "What is the color palette for the project?"
+                    </button>
+                    <button class="question-btn" onclick="askQuestion('What are the API endpoints?')">
+                        "What are the API endpoints?"
                     </button>
                     <button class="question-btn" onclick="askQuestion('Tell me about the API documentation.')">
                         "Tell me about the API documentation."
@@ -667,7 +776,8 @@
                     const docCount = metadata.documentsAccessed;
                     const docNames = metadata.documentNames || [];
                     
-                    metaText = `${user ? user.name : 'User'} • ${timestamp} • <span class="doc-count" onclick="showDocumentModal('${docNames.join(', ')}', ${docCount})">${docCount} documents accessed</span>`;
+                    console.log('DEBUG: Setting doc-count with:', docNames.join(', '), docCount);
+                    metaText = `${user ? user.name : 'User'} • ${timestamp} • <span class="doc-count" data-docs="${docNames.join(', ')}" data-count="${docCount}">${docCount} documents accessed</span>`;
                 }
             } else {
                 metaText = sender === 'user' ? (user ? user.name : 'User') : 'Assistant';
@@ -685,20 +795,31 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Show document modal
-        function showDocumentModal(docNames, docCount) {
+        // Old function removed - using showChatDocumentModal instead
+
+        // Show document modal for chat responses (alternative function)
+        function showChatDocumentModal(docNames, docCount) {
+            console.log('DEBUG: showChatDocumentModal called with:', docNames, docCount);
+            
+            // Convert short names to display names
+            const displayNames = docNames.split(', ').map(doc => {
+                return documentDisplayNames[doc] || doc;
+            });
+            
+            console.log('DEBUG: Display names:', displayNames);
+            
             // Create modal HTML
             const modalHTML = `
-                <div id="documentModal" class="modal">
+                <div id="chatDocumentModal" class="modal">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>📄 Documents Accessed (${docCount})</h3>
-                            <span class="close" onclick="closeDocumentModal()">&times;</span>
+                            <span class="close" onclick="closeChatDocumentModal()">&times;</span>
                         </div>
                         <div class="modal-body">
                             <p><strong>Documents used to answer this question:</strong></p>
                             <ul class="document-list">
-                                ${docNames.split(', ').map(doc => `<li>📋 ${doc}</li>`).join('')}
+                                ${displayNames.map(doc => `<li>📋 ${doc}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
@@ -709,7 +830,42 @@
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             
             // Show modal
-            document.getElementById('documentModal').style.display = 'block';
+            document.getElementById('chatDocumentModal').style.display = 'block';
+        }
+
+        // Close chat document modal
+        function closeChatDocumentModal() {
+            const modal = document.getElementById('chatDocumentModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Show document content modal (for persona dropdown)
+        function showDocumentContentModal(documentName) {
+            const content = documentContent[documentName] || 'Document content not available.';
+            const displayName = documentDisplayNames[documentName] || documentName;
+            
+            // Create modal HTML
+            const modalHTML = `
+                <div id="documentContentModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>📄 ${displayName}</h3>
+                            <span class="close" onclick="closeDocumentContentModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            document.getElementById('documentContentModal').style.display = 'block';
         }
 
         // Close document modal
@@ -720,11 +876,27 @@
             }
         }
 
+        // Close document content modal
+        function closeDocumentContentModal() {
+            const modal = document.getElementById('documentContentModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('documentModal');
+            const contentModal = document.getElementById('documentContentModal');
+            const chatModal = document.getElementById('chatDocumentModal');
             if (event.target === modal) {
                 closeDocumentModal();
+            }
+            if (event.target === contentModal) {
+                closeDocumentContentModal();
+            }
+            if (event.target === chatModal) {
+                closeChatDocumentModal();
             }
         }
 
@@ -748,6 +920,557 @@
 
         // Load users on page load
         loadUsers();
+
+        // User document access mapping
+        const userDocumentAccess = {
+            'ceo_sandra': [
+                'core_engine',
+                'public_api_docs', 
+                'architecture_v3',
+                'internal_sdk',
+                'design_mockups',
+                'finance_performance'
+            ],
+            'lead_dev_raj': [
+                'core_engine',
+                'public_api_docs',
+                'internal_sdk',
+                'design_mockups'
+            ],
+            'junior_dev_chloe': [
+                'core_engine',
+                'public_api_docs'
+            ],
+            'sales_bob': [
+                'public_api_docs'
+            ]
+        };
+
+        // Document content mapping - using actual document content
+        const documentContent = {
+            'core_engine': `
+                <h3>Project Odyssey - Core Engine Technical Documentation</h3>
+                <p>This document provides detailed technical information about Project Odyssey's core engine, intended for engineering team members.</p>
+                
+                <h4>Core Engine Architecture:</h4>
+                <p>The Project Odyssey core engine is built around a proprietary neural architecture that combines state-space models with attention mechanisms for optimal performance on enterprise workloads.</p>
+                
+                <h4>Technical Specifications:</h4>
+                <ul>
+                    <li><strong>Model Architecture:</strong> Hybrid SSM-Attention</li>
+                    <li><strong>Parameter Count:</strong> 7B (compressed from 14B)</li>
+                    <li><strong>Training Data:</strong> 2.5TB enterprise data</li>
+                    <li><strong>Inference Latency:</strong> <50ms average</li>
+                    <li><strong>Throughput:</strong> 10,000 requests/second</li>
+                    <li><strong>Memory Usage:</strong> 8GB GPU, 32GB RAM</li>
+                </ul>
+                
+                <h4>Performance Benchmarks:</h4>
+                <p>Latest benchmarks show significant improvements over previous versions:</p>
+                <ul>
+                    <li><strong>Token processing speed:</strong> 15% improvement</li>
+                    <li><strong>Memory efficiency:</strong> 40% reduction</li>
+                    <li><strong>Accuracy on enterprise tasks:</strong> 25% improvement</li>
+                    <li><strong>Response time consistency:</strong> 95th percentile <100ms</li>
+                </ul>
+                
+                <h4>Core Components:</h4>
+                <ol>
+                    <li><strong>State-Space Model (SSM):</strong>
+                        <ul>
+                            <li>Linear complexity in sequence length</li>
+                            <li>Efficient parallel processing</li>
+                            <li>Stable training dynamics</li>
+                            <li>Long-range dependency modeling</li>
+                        </ul>
+                    </li>
+                    <li><strong>Attention Integration:</strong>
+                        <ul>
+                            <li>Selective attention for specific tasks</li>
+                            <li>Multi-head attention for global context</li>
+                            <li>Sparse attention for efficiency</li>
+                            <li>Cross-attention for multi-modal tasks</li>
+                        </ul>
+                    </li>
+                    <li><strong>Processing Pipeline:</strong>
+                        <ul>
+                            <li>Input preprocessing and normalization</li>
+                            <li>Feature extraction and encoding</li>
+                            <li>Model inference and generation</li>
+                            <li>Output post-processing and formatting</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Optimization Techniques:</h4>
+                <ul>
+                    <li><strong>Knowledge distillation from larger models</strong></li>
+                    <li><strong>Quantization for reduced memory footprint</strong></li>
+                    <li><strong>Pruning for faster inference</strong></li>
+                    <li><strong>Dynamic batching for optimal throughput</strong></li>
+                </ul>
+                
+                <h4>Deployment Architecture:</h4>
+                <ul>
+                    <li><strong>Containerized deployment with Docker</strong></li>
+                    <li><strong>Kubernetes orchestration for scaling</strong></li>
+                    <li><strong>Load balancing across multiple instances</strong></li>
+                    <li><strong>Health monitoring and auto-recovery</strong></li>
+                </ul>
+                
+                <h4>Monitoring and Observability:</h4>
+                <ul>
+                    <li><strong>Real-time performance metrics</strong></li>
+                    <li><strong>Error tracking and alerting</strong></li>
+                    <li><strong>Resource utilization monitoring</strong></li>
+                    <li><strong>User behavior analytics</strong></li>
+                </ul>
+                
+                <h4>Security Features:</h4>
+                <ul>
+                    <li><strong>Model encryption at rest</strong></li>
+                    <li><strong>Secure inference endpoints</strong></li>
+                    <li><strong>Input validation and sanitization</strong></li>
+                    <li><strong>Audit logging for compliance</strong></li>
+                </ul>
+                
+                <p>The core engine is the foundation of Project Odyssey's AI capabilities and is continuously optimized for performance and reliability.</p>
+            `,
+            'public_api_docs': `
+                <h3>Project Odyssey - Public API Documentation</h3>
+                <p>Project Odyssey is a next-generation AI platform designed to revolutionize how organizations interact with their data. Our platform provides a comprehensive suite of APIs that enable seamless integration with existing systems.</p>
+                
+                <h4>Core Features:</h4>
+                <ul>
+                    <li><strong>Real-time data processing</strong></li>
+                    <li><strong>Advanced machine learning capabilities</strong></li>
+                    <li><strong>Scalable cloud infrastructure</strong></li>
+                    <li><strong>RESTful API design</strong></li>
+                </ul>
+                
+                <h4>API Endpoints:</h4>
+                <ul>
+                    <li><strong>/api/v1/process</strong> - Main data processing endpoint</li>
+                    <li><strong>/api/v1/analyze</strong> - Data analysis and insights</li>
+                    <li><strong>/api/v1/export</strong> - Data export functionality</li>
+                </ul>
+                
+                <h4>Authentication:</h4>
+                <p>All API requests require a valid API key passed in the Authorization header.</p>
+                
+                <h4>Rate Limits:</h4>
+                <ul>
+                    <li><strong>Standard tier:</strong> 1000 requests per hour</li>
+                    <li><strong>Premium tier:</strong> 10000 requests per hour</li>
+                </ul>
+                
+                <p>For more information about our APIs, please visit our developer portal or contact our support team.</p>
+            `,
+            'architecture_v3': `
+                <h3>Project Odyssey - Architecture v3.0 (TOP SECRET)</h3>
+                <p>This document contains highly confidential information about Project Odyssey's internal architecture. Access is restricted to executive team members only.</p>
+                
+                <h4>Core Architecture Overview:</h4>
+                <p>Project Odyssey utilizes a novel state-space model architecture that represents a significant departure from traditional transformer-based approaches. The system is built around a proprietary neural architecture that combines:</p>
+                
+                <ol>
+                    <li><strong>State-Space Models (SSM):</strong> Our core innovation uses structured state-space models for sequence modeling, providing linear complexity in sequence length while maintaining expressiveness.</li>
+                    <li><strong>Multi-Head Attention Integration:</strong> We've developed a hybrid approach that combines SSM with selective attention mechanisms for specific tasks requiring global context.</li>
+                    <li><strong>Hierarchical Processing:</strong> The system implements a three-tier hierarchy:
+                        <ul>
+                            <li>Tier 1: Raw data ingestion and preprocessing</li>
+                            <li>Tier 2: Feature extraction and pattern recognition</li>
+                            <li>Tier 3: High-level reasoning and decision making</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Technical Specifications:</h4>
+                <ul>
+                    <li><strong>Model Size:</strong> 7B parameters (compressed from 14B through knowledge distillation)</li>
+                    <li><strong>Training Data:</strong> 2.5TB of proprietary enterprise data</li>
+                    <li><strong>Inference Latency:</strong> <50ms for standard queries</li>
+                    <li><strong>Throughput:</strong> 10,000 requests/second on standard hardware</li>
+                </ul>
+                
+                <h4>Security Architecture:</h4>
+                <ul>
+                    <li><strong>End-to-end encryption</strong> for all data in transit and at rest</li>
+                    <li><strong>Zero-trust architecture</strong> with continuous authentication</li>
+                    <li><strong>Hardware security modules (HSM)</strong> for key management</li>
+                    <li><strong>Regular security audits</strong> and penetration testing</li>
+                </ul>
+                
+                <h4>Performance Benchmarks:</h4>
+                <ul>
+                    <li><strong>15% improvement</strong> in token processing speed over v2.0</li>
+                    <li><strong>40% reduction</strong> in memory usage</li>
+                    <li><strong>25% improvement</strong> in accuracy on enterprise benchmarks</li>
+                </ul>
+                
+                <h4>Deployment Strategy:</h4>
+                <ul>
+                    <li><strong>Phase 1:</strong> Internal testing and validation (Q1 2024)</li>
+                    <li><strong>Phase 2:</strong> Limited customer beta (Q2 2024)</li>
+                    <li><strong>Phase 3:</strong> General availability (Q3 2024)</li>
+                </ul>
+                
+                <p>This architecture represents a $50M investment in R&D and is expected to provide a competitive advantage for the next 3-5 years.</p>
+            `,
+            'internal_sdk': `
+                <h3>Project Odyssey - Internal SDK Documentation</h3>
+                <p>This document provides comprehensive information about the internal SDK for Project Odyssey, intended for engineering team members.</p>
+                
+                <h4>SDK Overview:</h4>
+                <p>The Project Odyssey Internal SDK provides developers with programmatic access to core platform features, enabling rapid development of custom applications and integrations.</p>
+                
+                <h4>Core Components:</h4>
+                <ol>
+                    <li><strong>Data Processing Engine:</strong>
+                        <ul>
+                            <li>Real-time stream processing capabilities</li>
+                            <li>Batch processing for large datasets</li>
+                            <li>Custom pipeline creation and management</li>
+                        </ul>
+                    </li>
+                    <li><strong>Machine Learning Framework:</strong>
+                        <ul>
+                            <li>Pre-trained model integration</li>
+                            <li>Custom model training and deployment</li>
+                            <li>Model versioning and A/B testing</li>
+                        </ul>
+                    </li>
+                    <li><strong>Analytics and Reporting:</strong>
+                        <ul>
+                            <li>Real-time dashboard creation</li>
+                            <li>Custom metric definition</li>
+                            <li>Automated report generation</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>SDK Installation:</h4>
+                <pre><code>npm install @odyssey/internal-sdk</code></pre>
+                
+                <h4>Basic Usage Example:</h4>
+                <pre><code>const { OdysseyClient } = require('@odyssey/internal-sdk');
+
+const client = new OdysseyClient({
+  apiKey: process.env.ODYSSEY_API_KEY,
+  environment: 'development'
+});
+
+// Process data stream
+const result = await client.processStream({
+  data: inputData,
+  pipeline: 'standard-processing'
+});</code></pre>
+                
+                <h4>Advanced Features:</h4>
+                <ul>
+                    <li><strong>Custom pipeline creation</strong></li>
+                    <li><strong>Real-time event streaming</strong></li>
+                    <li><strong>Batch job scheduling</strong></li>
+                    <li><strong>Model fine-tuning capabilities</strong></li>
+                </ul>
+                
+                <h4>Performance Considerations:</h4>
+                <ul>
+                    <li><strong>SDK optimized for low-latency operations</strong></li>
+                    <li><strong>Connection pooling for high-throughput scenarios</strong></li>
+                    <li><strong>Automatic retry logic with exponential backoff</strong></li>
+                    <li><strong>Comprehensive error handling and logging</strong></li>
+                </ul>
+                
+                <h4>Security Features:</h4>
+                <ul>
+                    <li><strong>API key authentication</strong></li>
+                    <li><strong>Request signing for sensitive operations</strong></li>
+                    <li><strong>Rate limiting and quota management</strong></li>
+                    <li><strong>Audit logging for compliance</strong></li>
+                </ul>
+                
+                <h4>Integration Examples:</h4>
+                <ul>
+                    <li><strong>REST API wrappers</strong></li>
+                    <li><strong>GraphQL schema generation</strong></li>
+                    <li><strong>Webhook support for real-time updates</strong></li>
+                    <li><strong>Database connectors for popular systems</strong></li>
+                </ul>
+                
+                <h4>API Endpoints:</h4>
+                <h4>Internal API Endpoints:</h4>
+                
+                <p><strong>Data Processing:</strong> POST /api/internal/v1/streams/process, POST /api/internal/v1/batch/jobs, GET /api/internal/v1/streams/{streamId}/status, DELETE /api/internal/v1/streams/{streamId}</p>
+                
+                <p><strong>Machine Learning:</strong> POST /api/internal/v1/models/train, GET /api/internal/v1/models/{modelId}/status, PUT /api/internal/v1/models/{modelId}/deploy, DELETE /api/internal/v1/models/{modelId}</p>
+                
+                <p><strong>Analytics:</strong> POST /api/internal/v1/analytics/metrics, GET /api/internal/v1/analytics/dashboards, PUT /api/internal/v1/analytics/reports/schedule, DELETE /api/internal/v1/analytics/reports/{reportId}</p>
+                
+                <p><strong>System Management:</strong> GET /api/internal/v1/system/health, POST /api/internal/v1/system/config, GET /api/internal/v1/system/logs, PUT /api/internal/v1/system/maintenance</p>
+                
+                <p><strong>Security:</strong> POST /api/internal/v1/auth/keys/rotate, GET /api/internal/v1/auth/audit/logs, PUT /api/internal/v1/auth/permissions, DELETE /api/internal/v1/auth/sessions/{sessionId}</p>
+                
+                <h4>Authentication:</h4>
+                <p>All internal API endpoints require:</p>
+                <ul>
+                    <li><strong>Valid API key with internal access</strong></li>
+                    <li><strong>Request signing for sensitive operations</strong></li>
+                    <li><strong>Rate limiting: 1000 requests/minute per key</strong></li>
+                    <li><strong>Audit logging for all operations</strong></li>
+                </ul>
+                
+                <p>This SDK is actively maintained and updated monthly with new features and performance improvements.</p>
+            `,
+            'design_mockups': `
+                <h3>Project Odyssey - Design Mockups and UI Specifications</h3>
+                <p>This document contains design specifications and mockups for Project Odyssey's user interface, intended for engineering team members.</p>
+                
+                <h4>Design Philosophy:</h4>
+                <p>Project Odyssey's UI follows a minimalist, intuitive design approach that prioritizes user experience and accessibility. The interface is designed to handle complex AI operations while maintaining simplicity for end users.</p>
+                
+                <h4>Core UI Components:</h4>
+                <ol>
+                    <li><strong>Dashboard Interface:</strong>
+                        <ul>
+                            <li>Real-time data visualization</li>
+                            <li>Interactive charts and graphs</li>
+                            <li>Customizable widget layout</li>
+                            <li>Dark/light theme support</li>
+                        </ul>
+                    </li>
+                    <li><strong>Data Processing Interface:</strong>
+                        <ul>
+                            <li>Drag-and-drop pipeline builder</li>
+                            <li>Real-time processing status</li>
+                            <li>Progress indicators and notifications</li>
+                            <li>Error handling and recovery</li>
+                        </ul>
+                    </li>
+                    <li><strong>Model Management:</strong>
+                        <ul>
+                            <li>Model performance metrics</li>
+                            <li>A/B testing interface</li>
+                            <li>Version control visualization</li>
+                            <li>Deployment status tracking</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Design Specifications:</h4>
+                <ul>
+                    <li><strong>Color Palette:</strong> Blue (#1E40AF), Green (#059669), Gray (#6B7280)</li>
+                    <li><strong>Typography:</strong> Inter font family</li>
+                    <li><strong>Spacing:</strong> 8px grid system</li>
+                    <li><strong>Border Radius:</strong> 8px for cards, 4px for buttons</li>
+                    <li><strong>Shadows:</strong> Subtle elevation with 0-3 levels</li>
+                </ul>
+                
+                <h4>Responsive Design:</h4>
+                <ul>
+                    <li><strong>Mobile-first approach</strong></li>
+                    <li><strong>Breakpoints:</strong> 640px, 768px, 1024px, 1280px</li>
+                    <li><strong>Touch-friendly interface elements</strong></li>
+                    <li><strong>Optimized for tablet and desktop use</strong></li>
+                </ul>
+                
+                <h4>Accessibility Features:</h4>
+                <ul>
+                    <li><strong>WCAG 2.1 AA compliance</strong></li>
+                    <li><strong>Keyboard navigation support</strong></li>
+                    <li><strong>Screen reader compatibility</strong></li>
+                    <li><strong>High contrast mode</strong></li>
+                    <li><strong>Focus indicators</strong></li>
+                </ul>
+                
+                <h4>Interactive Elements:</h4>
+                <ul>
+                    <li><strong>Hover states for all clickable elements</strong></li>
+                    <li><strong>Loading states and animations</strong></li>
+                    <li><strong>Toast notifications for user feedback</strong></li>
+                    <li><strong>Modal dialogs for complex operations</strong></li>
+                </ul>
+                
+                <h4>User Flow:</h4>
+                <ol>
+                    <li>Authentication and onboarding</li>
+                    <li>Dashboard overview</li>
+                    <li>Project creation and setup</li>
+                    <li>Data upload and processing</li>
+                    <li>Model training and deployment</li>
+                    <li>Results analysis and export</li>
+                </ol>
+                
+                <h4>Performance Considerations:</h4>
+                <ul>
+                    <li><strong>Lazy loading for large datasets</strong></li>
+                    <li><strong>Virtual scrolling for long lists</strong></li>
+                    <li><strong>Image optimization and compression</strong></li>
+                    <li><strong>Caching strategies for static assets</strong></li>
+                </ul>
+                
+                <p>The design system is built with React components and follows atomic design principles for consistency and maintainability.</p>
+            `,
+            'finance_performance': `
+                <h3>Project Odyssey - Financial Performance Report (CONFIDENTIAL)</h3>
+                <p>This document contains sensitive financial information about Project Odyssey. Access is restricted to executive team members and authorized finance personnel.</p>
+                
+                <h4>Financial Overview:</h4>
+                <p>Project Odyssey represents the largest R&D investment in Innovate Inc.'s history, with a total budget allocation of $75M over three years.</p>
+                
+                <h4>Budget Breakdown:</h4>
+                <ul>
+                    <li><strong>Year 1:</strong> $25M (Infrastructure and core development)</li>
+                    <li><strong>Year 2:</strong> $30M (Advanced features and scaling)</li>
+                    <li><strong>Year 3:</strong> $20M (Market launch and optimization)</li>
+                </ul>
+                
+                <h4>Current Status (Q4 2024):</h4>
+                <ul>
+                    <li><strong>Total spent to date:</strong> $68.2M (90.9% of budget)</li>
+                    <li><strong>Remaining budget:</strong> $6.8M</li>
+                    <li><strong>Project is on track</strong> to complete within budget</li>
+                </ul>
+                
+                <h4>Revenue Projections:</h4>
+                <ul>
+                    <li><strong>Year 1 post-launch:</strong> $15M</li>
+                    <li><strong>Year 2:</strong> $45M</li>
+                    <li><strong>Year 3:</strong> $120M</li>
+                    <li><strong>5-year projection:</strong> $500M</li>
+                </ul>
+                
+                <h4>Key Financial Metrics:</h4>
+                <ul>
+                    <li><strong>Customer Acquisition Cost (CAC):</strong> $2,500</li>
+                    <li><strong>Lifetime Value (LTV):</strong> $25,000</li>
+                    <li><strong>LTV/CAC Ratio:</strong> 10:1</li>
+                    <li><strong>Gross Margin:</strong> 85%</li>
+                    <li><strong>Net Profit Margin:</strong> 35%</li>
+                </ul>
+                
+                <h4>Investment Returns:</h4>
+                <ul>
+                    <li><strong>Expected ROI:</strong> 400% over 5 years</li>
+                    <li><strong>Break-even point:</strong> 18 months post-launch</li>
+                    <li><strong>Internal Rate of Return (IRR):</strong> 45%</li>
+                </ul>
+                
+                <h4>Risk Assessment:</h4>
+                <ul>
+                    <li><strong>Technical risk:</strong> Low (architecture proven)</li>
+                    <li><strong>Market risk:</strong> Medium (competitive landscape)</li>
+                    <li><strong>Financial risk:</strong> Low (strong cash position)</li>
+                    <li><strong>Regulatory risk:</strong> Low (compliance framework in place)</li>
+                </ul>
+                
+                <h4>Funding Sources:</h4>
+                <ul>
+                    <li><strong>Internal R&D budget:</strong> $50M</li>
+                    <li><strong>Strategic partnerships:</strong> $15M</li>
+                    <li><strong>Government grants:</strong> $10M</li>
+                </ul>
+                
+                <h4>Competitive Analysis:</h4>
+                <ul>
+                    <li><strong>Market size:</strong> $15B (growing 25% annually)</li>
+                    <li><strong>Our market share target:</strong> 5% in 3 years</li>
+                    <li><strong>Primary competitors:</strong> 3 major players</li>
+                    <li><strong>Competitive advantage:</strong> Proprietary architecture</li>
+                </ul>
+                
+                <p>This project is expected to become the primary revenue driver for Innovate Inc. within 3 years, representing a strategic transformation of our business model.</p>
+            `
+        };
+
+        // Document name mapping for display
+        const documentDisplayNames = {
+            'core_engine': 'Project Odyssey - Core Engine Technical Documentation',
+            'public_api_docs': 'Project Odyssey - Public API Documentation',
+            'architecture_v3': 'Project Odyssey - Architecture v3 Documentation',
+            'internal_sdk': 'Project Odyssey - Internal SDK Documentation',
+            'design_mockups': 'Project Odyssey - Design Mockups Documentation',
+            'finance_performance': 'Project Odyssey - Finance & Performance Documentation'
+        };
+
+        // Show user's accessible documents
+        function showUserDocs(userId, selectElement) {
+            const docs = userDocumentAccess[userId] || [];
+            
+            // Clear existing options except the first one
+            while (selectElement.options.length > 1) {
+                selectElement.remove(1);
+            }
+            
+            // Add document options
+            docs.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc;
+                option.textContent = `📋 ${documentDisplayNames[doc] || doc}`;
+                selectElement.appendChild(option);
+            });
+        }
+
+        // Initialize dropdowns on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listeners to all dropdowns
+            document.querySelectorAll('.docs-select').forEach(select => {
+                select.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user');
+                    showUserDocs(userId, this);
+                });
+                
+                // Add change event listener to handle document selection
+                select.addEventListener('change', function() {
+                    const selectedDoc = this.value;
+                    if (selectedDoc && selectedDoc !== '') {
+                        showDocumentContentModal(selectedDoc);
+                        // Reset dropdown
+                        this.selectedIndex = 0;
+                    }
+                });
+            });
+            
+            // Add event listener for document count clicks (using event delegation)
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('doc-count')) {
+                    console.log('DEBUG: doc-count clicked!');
+                    const docNames = e.target.getAttribute('data-docs');
+                    const docCount = e.target.getAttribute('data-count');
+                    console.log('DEBUG: docNames =', docNames, 'docCount =', docCount);
+                    console.log('DEBUG: typeof showDocumentModal =', typeof showDocumentModal);
+                    // Use the working function
+                    console.log('DEBUG: Calling showChatDocumentModal');
+                    showChatDocumentModal(docNames, docCount);
+                }
+            });
+        });
+
+        // Show document content modal
+        function showDocumentModal(documentName) {
+            const content = documentContent[documentName] || 'Document content not available.';
+            
+            // Create modal HTML
+            const modalHTML = `
+                <div id="documentModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>📄 ${documentName}</h3>
+                            <span class="close" onclick="closeDocumentModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            document.getElementById('documentModal').style.display = 'block';
+        }
     </script>
 </body>
 </html> 

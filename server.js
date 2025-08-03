@@ -163,6 +163,14 @@ app.post('/api/chat', async (req, res) => {
     // Create context from documents
     const context = relevantDocs.map(doc => doc.pageContent).join('\n\n');
     
+    // Debug: Log what documents were retrieved
+    console.log(`\n=== DEBUG: Retrieved Documents ===`);
+    relevantDocs.forEach((doc, index) => {
+      console.log(`Doc ${index + 1}: ${doc.metadata?.doc_id || 'Unknown'}`);
+      console.log(`Content preview: ${doc.pageContent.substring(0, 200)}...`);
+    });
+    console.log(`=== END DEBUG ===\n`);
+    
     // Create improved prompt for role-specific responses
     const userRole = user.name.toLowerCase();
     let roleInstructions = '';
@@ -179,16 +187,27 @@ app.post('/api/chat', async (req, res) => {
     
     const prompt = `You are an AI assistant for Project Odyssey at Innovate Inc. You have access to the following information based on the user's permissions:
 
+CONTEXT (ONLY USE THIS INFORMATION - DO NOT USE ANY OTHER KNOWLEDGE):
 ${context}
 
 User Question: ${message}
 
-Instructions:
+CRITICAL INSTRUCTIONS:
 1. ${roleInstructions}
-2. Only use information from the provided context
+2. ONLY use information from the provided context above - DO NOT use any knowledge from your training data
 3. If the context doesn't contain enough information to answer the question, say "I don't have enough information to answer that question completely."
 4. Be professional but conversational
-5. Don't mention that you're an AI assistant or reference the context directly`;
+5. Don't mention that you're an AI assistant or reference the context directly
+6. If you're asked about specific details like colors, numbers, or names, ONLY use what's explicitly stated in the context
+7. IMPORTANT: If the user asks about topics not covered in the provided context, you must say "I don't have access to that information based on my current permissions."
+8. DO NOT make up information or use general knowledge - only use what's in the context
+9. If the context is empty or doesn't contain relevant information, say "I don't have access to the information you're asking about."`;
+
+    // Debug: Log the context being sent to LLM
+    console.log(`\n=== DEBUG: Context sent to LLM ===`);
+    console.log(`Context length: ${context.length} characters`);
+    console.log(`First 500 chars: ${context.substring(0, 500)}...`);
+    console.log(`=== END DEBUG ===\n`);
 
     // Generate response using OpenAI
     const response = await llm.invoke(prompt);
@@ -283,6 +302,11 @@ app.get('/', (req, res) => {
 // Serve the chunks visualization page
 app.get('/chunks', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chunks.html'));
+});
+
+// Serve the comparison page
+app.get('/compare', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'compare.html'));
 });
 
 // Initialize and start server
