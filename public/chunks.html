@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromaDB Chunks Visualizer - Project Odyssey</title>
+    <title>Chunks Visualizer</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -257,6 +257,243 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
         }
 
+        .document-filter {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .select-all-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .select-all-btn, .clear-all-btn {
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .select-all-btn:hover {
+            background: #d1d5db;
+        }
+
+        .clear-all-btn:hover {
+            background: #fca5a5;
+            color: #991b1b;
+        }
+
+        .document-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .document-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .document-checkbox:hover {
+            background: #f9fafb;
+            border-color: #3b82f6;
+        }
+
+        .document-checkbox input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .document-checkbox label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .document-chunk-count {
+            background: #3b82f6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .filter-results-summary {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            color: #6b7280;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .embedding-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .embedding-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .embedding-visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .embedding-bar {
+            width: 8px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .embedding-bar:hover {
+            transform: scaleY(1.2);
+            background: #1d4ed8;
+        }
+
+        .embedding-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .embedding-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .embedding-toggle {
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+
+        .embedding-toggle:hover {
+            background: #d1d5db;
+        }
+
+        .embedding-toggle.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .embedding-values {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .embedding-values-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .embedding-values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .embedding-value-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+
+        .dimension-label {
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .dimension-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .dimension-value.positive {
+            color: #059669;
+        }
+
+        .dimension-value.negative {
+            color: #dc2626;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -278,6 +515,29 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
+            }
+            
+            .document-checkboxes {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .select-all-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .embedding-values-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .embedding-value-item {
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -314,12 +574,40 @@
                 </div>
             </div>
 
+            <div class="document-filter" id="documentFilter" style="display: none;">
+                <div class="filter-header">
+                    <div class="filter-title">
+                        <i class="fas fa-filter"></i> Filter by Document
+                    </div>
+                    <div class="select-all-controls">
+                        <button class="select-all-btn" onclick="selectAllDocuments()">
+                            <i class="fas fa-check-double"></i> Select All
+                        </button>
+                        <button class="clear-all-btn" onclick="clearAllDocuments()">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+                <div class="document-checkboxes" id="documentCheckboxes">
+                    <!-- Document checkboxes will be populated here -->
+                </div>
+                <div class="filter-results-summary" id="filterSummary">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="filterSummaryText">Loading document options...</span>
+                </div>
+            </div>
+
             <div class="chunks-section">
                 <div class="section-header">
                     <h3><i class="fas fa-file-alt"></i> Document Chunks</h3>
-                    <button class="refresh-button" onclick="loadChunks()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="embedding-toggle" onclick="toggleAllEmbeddings()" id="globalEmbeddingToggle">
+                            <i class="fas fa-brain"></i> <span>Show All Embeddings</span>
+                        </button>
+                        <button class="refresh-button" onclick="loadChunks()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="chunks-container" id="chunksContainer">
@@ -333,6 +621,9 @@
     </div>
 
     <script>
+        let allChunks = [];
+        let selectedDocuments = new Set();
+
         async function loadChunks() {
             try {
                 const container = document.getElementById('chunksContainer');
@@ -351,8 +642,10 @@
                     throw new Error(data.error);
                 }
 
+                allChunks = data.chunks;
                 displayStats(data);
-                displayChunks(data.chunks);
+                setupDocumentFilter(data.chunks);
+                applyDocumentFilter();
                 
             } catch (error) {
                 document.getElementById('chunksContainer').innerHTML = 
@@ -405,8 +698,59 @@
                         </div>
                     </div>
                     ${chunk.embedding ? `
-                        <div class="embedding-preview">
-                            <i class="fas fa-brain"></i> Embedding (first 10 dims): [${chunk.embedding.map(d => d.toFixed(3)).join(', ')}]
+                        <div class="embedding-section">
+                            <div class="embedding-header">
+                                <i class="fas fa-brain"></i>
+                                <span>Vector Embedding</span>
+                                <button class="embedding-toggle" onclick="toggleEmbeddingView('${chunk.id}')" id="toggle_${chunk.id}">
+                                    <i class="fas fa-eye"></i> <span>Show Visualization</span>
+                                </button>
+                            </div>
+                            <div class="embedding-content" id="embedding_${chunk.id}" style="display: none;">
+                                <div class="embedding-visualization">
+                                    ${chunk.embedding.map((value, index) => {
+                                        const height = Math.abs(value) * 20 + 5;
+                                        const color = value >= 0 ? '#3b82f6' : '#ef4444';
+                                        return `<div class="embedding-bar" style="height: ${height}px; background: ${color};" title="Dim ${index}: ${value.toFixed(3)}"></div>`;
+                                    }).join('')}
+                                </div>
+                                <div class="embedding-values">
+                                    <div class="embedding-values-header">
+                                        <i class="fas fa-list"></i>
+                                        <span>Vector Values (first ${chunk.embedding.length} dimensions)</span>
+                                    </div>
+                                    <div class="embedding-values-grid">
+                                        ${chunk.embedding.map((value, index) => `
+                                            <div class="embedding-value-item">
+                                                <span class="dimension-label">Dim ${index}:</span>
+                                                <span class="dimension-value ${value >= 0 ? 'positive' : 'negative'}">${value.toFixed(6)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="embedding-stats">
+                                    <div class="embedding-stat">
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Min: ${Math.min(...chunk.embedding).toFixed(3)}</span>
+                                    </div>
+                                    <div class="embedding-stat">
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Max: ${Math.max(...chunk.embedding).toFixed(3)}</span>
+                                    </div>
+                                    <div class="embedding-stat">
+                                        <i class="fas fa-calculator"></i>
+                                        <span>Mean: ${(chunk.embedding.reduce((a, b) => a + b, 0) / chunk.embedding.length).toFixed(3)}</span>
+                                    </div>
+                                    <div class="embedding-stat">
+                                        <i class="fas fa-ruler"></i>
+                                        <span>Magnitude: ${Math.sqrt(chunk.embedding.reduce((sum, val) => sum + val * val, 0)).toFixed(3)}</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 8px; font-size: 0.8rem; color: #6b7280;">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Showing first ${chunk.embedding.length} dimensions of 384-dimensional vector</span>
+                                </div>
+                            </div>
                         </div>
                     ` : ''}
                 </div>
@@ -419,6 +763,180 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function setupDocumentFilter(chunks) {
+            // Get unique documents with chunk counts
+            const documentStats = {};
+            chunks.forEach(chunk => {
+                const docId = chunk.metadata?.doc_id || 'Unknown';
+                documentStats[docId] = (documentStats[docId] || 0) + 1;
+            });
+
+            // Sort documents by name
+            const sortedDocs = Object.keys(documentStats).sort();
+            
+            // Initially select all documents
+            selectedDocuments = new Set(sortedDocs);
+
+            // Create checkboxes
+            const checkboxContainer = document.getElementById('documentCheckboxes');
+            checkboxContainer.innerHTML = sortedDocs.map(docId => `
+                <div class="document-checkbox">
+                    <input type="checkbox" id="doc_${docId}" checked onchange="toggleDocument('${docId}')">
+                    <label for="doc_${docId}">${docId}</label>
+                    <span class="document-chunk-count">${documentStats[docId]}</span>
+                </div>
+            `).join('');
+
+            // Show the filter section
+            document.getElementById('documentFilter').style.display = 'block';
+            
+            updateFilterSummary();
+        }
+
+        function toggleDocument(docId) {
+            if (selectedDocuments.has(docId)) {
+                selectedDocuments.delete(docId);
+            } else {
+                selectedDocuments.add(docId);
+            }
+            applyDocumentFilter();
+            updateFilterSummary();
+        }
+
+        function selectAllDocuments() {
+            const checkboxes = document.querySelectorAll('#documentCheckboxes input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+                const docId = checkbox.id.replace('doc_', '');
+                selectedDocuments.add(docId);
+            });
+            applyDocumentFilter();
+            updateFilterSummary();
+        }
+
+        function clearAllDocuments() {
+            const checkboxes = document.querySelectorAll('#documentCheckboxes input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const docId = checkbox.id.replace('doc_', '');
+                selectedDocuments.delete(docId);
+            });
+            applyDocumentFilter();
+            updateFilterSummary();
+        }
+
+        function applyDocumentFilter() {
+            const filteredChunks = allChunks.filter(chunk => {
+                const docId = chunk.metadata?.doc_id || 'Unknown';
+                return selectedDocuments.has(docId);
+            });
+            
+            displayChunks(filteredChunks);
+            updateFilteredStats(filteredChunks);
+        }
+
+        function updateFilteredStats(filteredChunks) {
+            const uniqueDocs = new Set(filteredChunks.map(chunk => chunk.metadata?.doc_id)).size;
+            const avgChunkSize = filteredChunks.length > 0 ? Math.round(
+                filteredChunks.reduce((sum, chunk) => sum + chunk.content.length, 0) / filteredChunks.length
+            ) : 0;
+
+            document.getElementById('totalChunks').textContent = filteredChunks.length;
+            document.getElementById('uniqueDocs').textContent = uniqueDocs;
+            document.getElementById('avgChunkSize').textContent = avgChunkSize + ' chars';
+        }
+
+        function updateFilterSummary() {
+            const totalDocs = document.querySelectorAll('#documentCheckboxes input[type="checkbox"]').length;
+            const selectedCount = selectedDocuments.size;
+            const filteredChunks = allChunks.filter(chunk => {
+                const docId = chunk.metadata?.doc_id || 'Unknown';
+                return selectedDocuments.has(docId);
+            });
+            
+            const summaryText = selectedCount === totalDocs 
+                ? `Showing all ${filteredChunks.length} chunks from ${selectedCount} documents`
+                : selectedCount === 0
+                ? `No documents selected - showing 0 chunks`
+                : `Showing ${filteredChunks.length} chunks from ${selectedCount} of ${totalDocs} selected documents`;
+            
+            document.getElementById('filterSummaryText').textContent = summaryText;
+        }
+
+        function toggleEmbeddingView(chunkId) {
+            const embeddingContent = document.getElementById(`embedding_${chunkId}`);
+            const toggleButton = document.getElementById(`toggle_${chunkId}`);
+            const icon = toggleButton.querySelector('i');
+            const text = toggleButton.querySelector('span');
+            
+            if (embeddingContent.style.display === 'none') {
+                embeddingContent.style.display = 'block';
+                toggleButton.classList.add('active');
+                icon.className = 'fas fa-eye-slash';
+                if (text) text.textContent = 'Hide Visualization';
+            } else {
+                embeddingContent.style.display = 'none';
+                toggleButton.classList.remove('active');
+                icon.className = 'fas fa-eye';
+                if (text) text.textContent = 'Show Visualization';
+            }
+        }
+
+        function toggleAllEmbeddings() {
+            const globalToggle = document.getElementById('globalEmbeddingToggle');
+            if (!globalToggle) {
+                return;
+            }
+            
+            const allEmbeddings = document.querySelectorAll('.embedding-content');
+            const allToggles = document.querySelectorAll('.embedding-toggle:not(#globalEmbeddingToggle)');
+            
+            // Check if any embeddings are currently visible
+            let visibleCount = 0;
+            allEmbeddings.forEach(embedding => {
+                if (embedding.style.display !== 'none') {
+                    visibleCount++;
+                }
+            });
+            
+            const isShowing = visibleCount > 0;
+            
+            // Toggle all embeddings
+            allEmbeddings.forEach(embedding => {
+                embedding.style.display = isShowing ? 'none' : 'block';
+            });
+            
+            // Update all individual toggle buttons
+            allToggles.forEach(toggle => {
+                const toggleIcon = toggle.querySelector('i');
+                const toggleText = toggle.querySelector('span');
+                
+                if (isShowing) {
+                    toggle.classList.remove('active');
+                    toggleIcon.className = 'fas fa-eye';
+                    if (toggleText) toggleText.textContent = 'Show Visualization';
+                } else {
+                    toggle.classList.add('active');
+                    toggleIcon.className = 'fas fa-eye-slash';
+                    if (toggleText) toggleText.textContent = 'Hide Visualization';
+                }
+            });
+            
+            // Update global toggle button
+            const icon = globalToggle.querySelector('i');
+            const text = globalToggle.querySelector('span');
+            
+            if (isShowing) {
+                globalToggle.classList.remove('active');
+                icon.className = 'fas fa-brain';
+                if (text) text.textContent = 'Show All Embeddings';
+            } else {
+                globalToggle.classList.add('active');
+                icon.className = 'fas fa-eye-slash';
+                if (text) text.textContent = 'Hide All Embeddings';
+            }
         }
 
         // Load chunks when page loads

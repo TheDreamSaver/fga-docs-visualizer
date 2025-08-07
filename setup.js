@@ -222,8 +222,22 @@ async function setupVectorStore() {
     const files = fs.readdirSync(documentsDir);
     
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-      chunkOverlap: 200,
+      chunkSize: 800,
+      chunkOverlap: 150,
+      separators: [
+        '\n\n',           // Double newlines (paragraphs)
+        '\n',             // Single newlines
+        '. ',             // Sentences
+        '? ',             // Questions
+        '! ',             // Exclamations
+        ', ',             // Lists
+        ' - ',            // Bullet points
+        ': ',             // Key-value pairs
+        '; ',             // Semicolons
+        ' ',              // Words
+        ''                // Characters (fallback)
+      ],
+      keepSeparator: true
     });
 
     for (const file of files) {

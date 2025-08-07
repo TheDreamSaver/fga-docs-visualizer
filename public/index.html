@@ -52,6 +52,78 @@
             overflow: hidden;
         }
 
+        .fga-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .fga-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .fga-enabled {
+            color: #059669;
+        }
+
+        .fga-disabled {
+            color: #dc2626;
+        }
+
         .sidebar {
             background: #f8fafc;
             padding: 30px;
@@ -72,8 +144,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 9px;
+            margin-bottom: 3px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -147,7 +219,7 @@
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: 840px;
+            height: 768px;
         }
 
         .chat-header {
@@ -523,13 +595,21 @@
     </style>
 </head>
 <body>
+    <div class="fga-toggle">
+        <span class="fga-status" id="fgaStatus">FGA: <span class="fga-enabled">ENABLED</span></span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="fgaToggle" checked>
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-shield-alt"></i> FGA Docs Visualizer</h1>
             <p>Project Odyssey - OpenFGA Secured RAG Chatbot Demo</p>
         </div>
 
-        <div class="nav-links" style="text-align: center; margin: 30px 0 40px 0;">
+        <div class="nav-links" style="text-align: center; margin: 30px 0 20px 0;">
             <a href="/" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
                 <i class="fas fa-home"></i> Main Demo
             </a>
@@ -597,8 +677,8 @@
 
                 <div class="suggested-questions">
                     <h4><i class="fas fa-lightbulb"></i> Try This Question:</h4>
-                    <button class="question-btn" onclick="askQuestion('Give me a full summary of Project Odyssey\'s status, technology, and performance.')">
-                        "Give me a full summary of Project Odyssey's status, technology, and performance."
+                    <button class="question-btn" onclick="askQuestion('Give me a full summary of Project Odyssey\'s status, technology, and financial performance.')">
+                        "Give me a full summary of Project Odyssey's status, technology, and financial performance."
                     </button>
                     <button class="question-btn" onclick="askQuestion('Tell me about the UI/UX guidelines for Project Odyssey?')">
                         "Tell me about the UI/UX guidelines for Project Odyssey?"
@@ -677,6 +757,7 @@
     <script>
         let selectedUser = null;
         let users = {};
+        let fgaEnabled = true;
 
         // Load users on page load
         async function loadUsers() {
@@ -707,6 +788,17 @@
             });
         });
 
+        // FGA toggle functionality
+        document.getElementById('fgaToggle').addEventListener('change', function() {
+            fgaEnabled = this.checked;
+            const statusElement = document.getElementById('fgaStatus');
+            if (fgaEnabled) {
+                statusElement.innerHTML = 'FGA: <span class="fga-enabled">ENABLED</span>';
+            } else {
+                statusElement.innerHTML = 'FGA: <span class="fga-disabled">DISABLED</span>';
+            }
+        });
+
         // Send message
         async function sendMessage() {
             const messageInput = document.getElementById('messageInput');
@@ -734,7 +826,8 @@
                     },
                     body: JSON.stringify({
                         message: message,
-                        userId: selectedUser
+                        userId: selectedUser,
+                        fgaEnabled: fgaEnabled
                     })
                 });
 

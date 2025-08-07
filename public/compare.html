@@ -316,6 +316,78 @@
             color: #1d4ed8;
         }
 
+        .fga-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .fga-status {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .fga-enabled {
+            color: #059669;
+        }
+
+        .fga-disabled {
+            color: #dc2626;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -336,13 +408,21 @@
     </style>
 </head>
 <body>
+    <div class="fga-toggle">
+        <span class="fga-status" id="fgaStatus">FGA: <span class="fga-enabled">ENABLED</span></span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="fgaToggle" checked>
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>Employee Response Comparison</h1>
             <p>Ask a question and see how different employees would respond based on their access levels</p>
         </div>
 
-        <div class="nav-links" style="margin: 30px 0 40px 0;">
+        <div class="nav-links" style="margin: 30px 0 20px 0;">
             <a href="/"><i class="fas fa-home"></i> Main Demo</a>
             <a href="/chunks"><i class="fas fa-cubes"></i> Chunks View</a>
             <a href="/compare"><i class="fas fa-users"></i> Compare Responses</a>
@@ -365,8 +445,8 @@
                     <i class="fas fa-lightbulb"></i> Try These Questions:
                 </h4>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px;">
-                    <button class="question-btn" onclick="askSuggestedQuestion('Give me a full summary of Project Odyssey\'s status, technology, and performance.')" style="display: block; width: 100%; padding: 10px 15px; margin-bottom: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.9rem; color: #475569; transition: all 0.3s ease;">
-                        "Give me a full summary of Project Odyssey's status, technology, and performance."
+                    <button class="question-btn" onclick="askSuggestedQuestion('Give me a full summary of Project Odyssey\'s status, technology, and financial performance.')" style="display: block; width: 100%; padding: 10px 15px; margin-bottom: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.9rem; color: #475569; transition: all 0.3s ease;">
+                        "Give me a full summary of Project Odyssey's status, technology, and financial performance."
                     </button>
                     <button class="question-btn" onclick="askSuggestedQuestion('Tell me about the UI/UX guidelines for Project Odyssey?')" style="display: block; width: 100%; padding: 10px 15px; margin-bottom: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: left; font-size: 0.9rem; color: #475569; transition: all 0.3s ease;">
                         "Tell me about the UI/UX guidelines for Project Odyssey?"
@@ -403,6 +483,18 @@
         const loading = document.getElementById('loading');
         const errorMessage = document.getElementById('errorMessage');
         const responsesContainer = document.getElementById('responsesContainer');
+        let fgaEnabled = true;
+
+        // FGA toggle functionality
+        document.getElementById('fgaToggle').addEventListener('change', function() {
+            fgaEnabled = this.checked;
+            const statusElement = document.getElementById('fgaStatus');
+            if (fgaEnabled) {
+                statusElement.innerHTML = 'FGA: <span class="fga-enabled">ENABLED</span>';
+            } else {
+                statusElement.innerHTML = 'FGA: <span class="fga-disabled">DISABLED</span>';
+            }
+        });
 
         // Available users
         const users = {
@@ -454,7 +546,8 @@
                                 },
                                 body: JSON.stringify({
                                     message: question,
-                                    userId: userId
+                                    userId: userId,
+                                    fgaEnabled: fgaEnabled
                                 })
                             });
 
