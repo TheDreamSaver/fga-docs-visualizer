@@ -15,7 +15,7 @@ const fgaClient = new OpenFgaClient({
 
 // Initialize ChromaDB client
 const chromaClient = new ChromaClient({
-  path: process.env.CHROMA_PERSIST_DIRECTORY || './chroma_db'
+  path: 'http://localhost:8000'
 });
 
 async function setupOpenFGA() {
@@ -205,15 +205,53 @@ async function setupVectorStore() {
   console.log('Setting up vector store...');
 
   try {
-    // Create or get collection
+    // Create or get collection with embedding function
     const collectionName = 'odyssey_docs';
     let collection;
 
     try {
-      collection = await chromaClient.getCollection({ name: collectionName });
+      collection = await chromaClient.getCollection({ 
+        name: collectionName,
+        embeddingFunction: {
+          generate: async function(texts) {
+            // Simple hash-based embedding for demo (same as server.js)
+            const crypto = require('crypto');
+            return texts.map(text => {
+              const hash = crypto.createHash('sha256').update(text).digest();
+              const embedding = new Array(384).fill(0);
+              
+              // Use hash bytes to create a simple embedding
+              for (let i = 0; i < Math.min(hash.length, embedding.length); i++) {
+                embedding[i] = (hash[i] - 128) / 128; // Normalize to [-1, 1]
+              }
+              
+              return embedding;
+            });
+          }
+        }
+      });
       console.log('✅ Using existing collection:', collectionName);
     } catch (error) {
-      collection = await chromaClient.createCollection({ name: collectionName });
+      collection = await chromaClient.createCollection({ 
+        name: collectionName,
+        embeddingFunction: {
+          generate: async function(texts) {
+            // Simple hash-based embedding for demo (same as server.js)
+            const crypto = require('crypto');
+            return texts.map(text => {
+              const hash = crypto.createHash('sha256').update(text).digest();
+              const embedding = new Array(384).fill(0);
+              
+              // Use hash bytes to create a simple embedding
+              for (let i = 0; i < Math.min(hash.length, embedding.length); i++) {
+                embedding[i] = (hash[i] - 128) / 128; // Normalize to [-1, 1]
+              }
+              
+              return embedding;
+            });
+          }
+        }
+      });
       console.log('✅ Created new collection:', collectionName);
     }
 
