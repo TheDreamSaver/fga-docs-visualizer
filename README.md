@@ -1,156 +1,57 @@
 # FGA Docs Visualizer
 
-A demonstration of OpenFGA-secured RAG (Retrieval-Augmented Generation) chatbot that shows how to implement document-level authorization with vector search.
+A local demonstration of authorization in a retrieval-augmented chatbot. Synthetic “Project Odyssey” documents have different access rules for an executive, lead developer, junior developer and sales persona. OpenFGA filters document excerpts before they reach the model.
 
-## 🎯 Overview
+The application includes a chat UI, a raw chunk visualizer and a persona comparison page. These are teaching tools for synthetic data. The server requires explicit local-demo mode, binds to loopback and refuses production mode.
 
-This project demonstrates how to build a secure RAG chatbot that respects document-level permissions using OpenFGA (Open Fine-Grained Authorization). Users get different responses based on their authorization level, ensuring sensitive information is properly protected.
+## Run locally
 
-## 🚀 Quick Start
+Requires Node.js 22+ and Docker (or local OpenFGA and ChromaDB servers).
 
-For detailed setup instructions, see **[SETUP.md](./SETUP.md)**.
-
-### Prerequisites
-
-- Node.js (v16+)
-- Python (v3.8+)
-- Git
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/TheDreamSaver/fga-docs-visualizer.git
-cd fga-docs-visualizer
-
-# Install dependencies
-npm install
-
-# Set up environment
+```sh
+npm ci
 cp env.example .env
-# Edit .env with your configuration
-
-# Initialize the project
+docker compose up -d
 npm run setup
+```
 
-# Start the application
+Copy the printed `OPENFGA_STORE_ID` and `OPENFGA_AUTHORIZATION_MODEL_ID` into `.env`. Set your own server-only `OPENAI_API_KEY` to enable generated answers, then run:
+
+```sh
 npm start
 ```
 
-Visit http://localhost:3000 to access the demo.
+Open http://127.0.0.1:3002. The chunk visualizer is at `/chunks` and the persona comparison is at `/compare`. Setup writes a model and synthetic relationship tuples to OpenFGA and indexes the sample documents into ChromaDB. For a fresh store, leave the store/model IDs empty before setup. Reusing a store that already has these tuples requires deliberate administrative handling of existing tuples.
 
-## 🏗️ Architecture
+`compose.yaml` exposes both backing services on loopback only. If you already run the SmartSpend demo’s OpenFGA instance on port 8081, reuse it rather than starting a second service on that port.
 
-### Components
+## Authorization behavior
 
-- **OpenFGA**: Authorization engine enforcing document-level permissions
-- **ChromaDB**: Vector store for document similarity search
-- **Express.js**: Web server and API endpoints
-- **Custom FGA Retriever**: Integrates authorization with document retrieval
+- Each persona maps to a predefined synthetic FGA user ID. Persona selection is not real-user authentication.
+- The retriever uses `ListObjects` to filter excerpts before generation. Missing document metadata never grants access.
+- Retrieval or authorization failures stop generation. An empty authorized set makes no model call.
+- The authorization-off comparison is disabled by default. Set `ALLOW_INSECURE_COMPARISON=true` only to demonstrate the contrast locally with synthetic documents.
+- The raw chunk endpoint intentionally shows every synthetic chunk in this loopback-only visualizer. It is not an authorized document API for real users.
+- No service credential is embedded in the source. A hosted FGA service can be configured with the server-only client credentials in `env.example`.
 
-### Data Flow
+## Retrieval and generation
 
-1. User asks a question
-2. System identifies user's authorization level via OpenFGA
-3. Vector store finds relevant documents
-4. FGA Retriever filters documents based on user permissions
-5. LLM generates response using only authorized documents
-6. Response reflects user's access level
+Indexing and querying share a deterministic, normalized bag-of-words hash embedding. This makes lexical overlap visible without another API key. It is a teaching embedding, not a semantic model or a retrieval-quality benchmark. Re-run setup to reindex an older collection created with the previous hash-per-string implementation.
 
-## 🔐 Authorization Model
+Generated answers use OpenAI through the server. `OPENAI_MODEL` defaults to the existing `gpt-3.5-turbo`; choose a model available to your project. Missing model credentials produce an explicit configuration response. Ollama settings were removed because there was no functioning Ollama implementation.
 
-The OpenFGA model defines a hierarchical permission structure:
+## Checks
 
-- **Organizations** contain projects
-- **Projects** contain components and documents
-- **Documents** contain chunks (for vector search)
-- **Teams** have different access levels
-- **Users** inherit permissions through team membership
-
-### User Roles
-
-1. **Sandra (CEO)** - Full access to all documents
-2. **Raj (Lead Developer)** - Access to engineering documents
-3. **Chloe (Junior Developer)** - Limited access to core engine only
-4. **Bob (Sales)** - Public documents only
-
-## 📚 Available Documents
-
-- `architecture_v3.txt` - TOP SECRET (Executive access only)
-- `finance_performance.txt` - CONFIDENTIAL (Executive access only)
-- `internal_sdk.txt` - Internal (Engineering team access)
-- `design_mockups.txt` - Internal (Engineering team access)
-- `core_engine.txt` - Internal (All engineering access)
-- `public_api_docs.txt` - Public (Everyone can access)
-
-## 🧪 Testing
-
-1. Start the server: `npm start`
-2. Open http://localhost:3000
-3. Select a user persona from the sidebar
-4. Ask questions about Project Odyssey
-5. Observe different responses based on user permissions
-
-### Example Questions
-
-- "What is Project Odyssey?"
-- "Tell me about the architecture"
-- "What are the financial projections?"
-- "How does the core engine work?"
-
-## 📁 Project Structure
-
-```
-fga-docs-visualizer/
-├── data/documents/          # Sample documents with different sensitivity levels
-├── lib/
-│   └── FgaRetriever.js     # Custom retriever integrating FGA with vector search
-├── public/
-│   ├── index.html          # Main demo interface
-│   └── chunks.html         # Chunks visualizer
-├── fga-model.fga           # OpenFGA authorization model
-├── create-tuples-fixed.js  # Script to create authorization tuples
-├── setup.js                # Main initialization script
-├── test.js                 # Testing utilities
-├── server.js               # Express server with chat API
-├── SETUP.md                # Comprehensive setup guide
-└── package.json            # Dependencies and scripts
+```sh
+npm test
+npm run test:integration
+npm audit
 ```
 
-## 🔧 Scripts
+`npm test` exercises local API and retriever behavior with injected services; it makes no paid API calls. `test:integration` needs the configured local FGA model and checks the synthetic users’ real permissions. Model setup was also checked against OpenFGA 1.22.1.
 
-- `npm start` - Start the application
-- `npm run setup` - Initialize OpenFGA and vector store
-- `npm test` - Run tests
-- `npm run dev` - Start in development mode
+See [SECURITY.md](SECURITY.md) before making the existing repository history public.
 
-## 📖 API Endpoints
+## License
 
-- `GET /` - Main demo interface
-- `GET /chunks` - Chunks visualizer
-- `POST /api/chat` - Chat endpoint
-- `GET /api/users` - Available users
-- `GET /api/chunks` - Vector store chunks
-- `GET /api/health` - Health check
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For detailed setup instructions and troubleshooting, see **[SETUP.md](./SETUP.md)**.
-
-If you encounter issues:
-1. Check the troubleshooting section in SETUP.md
-2. Review console logs for error messages
-3. Ensure all prerequisites are installed
-4. Open an issue on GitHub 
+[MIT](LICENSE). Built by Ashish Jha and contributors. Sample companies, personas and document contents are fictional.

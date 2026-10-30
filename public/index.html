@@ -788,6 +788,15 @@
             });
         });
 
+        fetch('/api/health').then(response => response.json()).then(config => {
+            if (!config.allowInsecureComparison) {
+                const toggle = document.getElementById('fgaToggle');
+                toggle.checked = true;
+                toggle.disabled = true;
+                toggle.title = 'The authorization-off comparison is disabled by the server.';
+            }
+        });
+
         // FGA toggle functionality
         document.getElementById('fgaToggle').addEventListener('change', function() {
             fgaEnabled = this.checked;
@@ -879,11 +888,12 @@
 
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    <p>${content}</p>
+                    <p class="reply-text"></p>
                     <div class="message-meta">${metaText}</div>
                 </div>
             `;
             
+            messageDiv.querySelector('.reply-text').textContent = content;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }

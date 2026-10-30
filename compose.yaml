@@ -1,0 +1,15 @@
+services:
+  openfga:
+    image: openfga/openfga:v1.22.1
+    command: run --datastore-engine memory --playground-enabled=false
+    ports:
+      - "127.0.0.1:8081:8080"
+  chroma:
+    image: chromadb/chroma:0.6.3
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./.data/chroma:/chroma/chroma

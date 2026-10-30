@@ -579,10 +579,16 @@
             }
         }
 
+        function escapeHtml(value) {
+            const node = document.createElement('span');
+            node.textContent = String(value ?? '');
+            return node.innerHTML;
+        }
+
         function displayResponses(responses, question) {
             responsesContainer.innerHTML = `
                 <h2 style="margin-bottom: 20px; color: #1e293b; text-align: center;">
-                    Responses to: "${question}"
+                    Responses to: "${escapeHtml(question)}"
                 </h2>
                 <div class="responses-grid">
                     ${responses.map(response => createResponseCard(response)).join('')}
@@ -608,7 +614,7 @@
                     <div class="response-content">
                         ${isAccessDenied ? 
                             '<em>Access denied - No relevant information available based on current permissions.</em>' : 
-                            response.response
+                            escapeHtml(response.response)
                         }
                     </div>
                     <div class="response-meta">

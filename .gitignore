@@ -70,4 +70,7 @@ logs
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+.data/
+.env.*
+!.env.example
