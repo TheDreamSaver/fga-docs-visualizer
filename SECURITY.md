@@ -1,9 +1,15 @@
-# Credential handling and release status
+# Security and credential handling
 
-The server previously contained an OpenAI key as a fallback value, including in earlier commits. The current source has no embedded key and reads server environment configuration. Old commits still contain the original key string.
+OpenAI and hosted FGA credentials belong only in server environment variables. Use your own values from `env.example`; never commit them or send service credentials to the browser.
 
-Before changing this repository’s visibility, revoke/rotate that key and prepare a clean public history or a separate clean public release that preserves attribution. Updating the latest source alone does not clean history. No key rotation, history rewrite, visibility change or deployment is performed by this patch.
+## History cleanup
 
-This is a synthetic-data, local teaching demo. Selectable personas, a raw chunk endpoint and an optional authorization-off comparison are intentionally restricted to a non-production loopback server with `DEMO_MODE=true`. They must not be exposed as a real-user document service. Such a service needs authenticated identities and authorized routes for every document/chunk endpoint.
+On 31 October 2026, the previously embedded OpenAI key was removed from the published branch history. Author attribution, dates and project files were preserved. The historical key was checked against the provider and rejected as invalid. Git history cleanup does not delete copies held in old clones, deployments or GitHub caches.
 
-Contact ashish@ashishjha.ai privately for security reports. Do not include credentials in public issues.
+If you cloned an earlier revision, use a fresh clone so an old branch cannot reintroduce the removed value.
+
+## Demo boundaries
+
+This is a synthetic-data, local teaching demo. Selectable personas, the raw chunk endpoint and the optional authorization-off comparison are restricted to a non-production loopback server with `DEMO_MODE=true`. A real-user document service needs authenticated identities and authorized routes for every document and chunk endpoint.
+
+Report vulnerabilities privately to ashish@ashishjha.ai. Do not post credentials in public issues.

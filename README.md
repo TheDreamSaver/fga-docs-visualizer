@@ -50,7 +50,7 @@ npm audit
 
 `npm test` exercises local API and retriever behavior with injected services; it makes no paid API calls. `test:integration` needs the configured local FGA model and checks the synthetic users’ real permissions. Model setup was also checked against OpenFGA 1.22.1.
 
-See [SECURITY.md](SECURITY.md) before making the existing repository history public.
+See [SECURITY.md](SECURITY.md) for credential handling and the history-cleanup notice.
 
 ## License
 
